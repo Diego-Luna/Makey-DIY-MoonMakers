@@ -39,11 +39,6 @@ IPAddress subnet(255,255,255,0);
 
 ESP8266WebServer server(80);
 
-uint8_t LED1pin = D7;
-bool LED1status = LOW;
-
-uint8_t LED2pin = D6;
-bool LED2status = LOW;
 
 byte statusWifioInfra = 0;
 
@@ -86,9 +81,6 @@ void setup() {
 
   // ----- Servicio wifi -----
 
-  pinMode(LED1pin, OUTPUT);
-  pinMode(LED2pin, OUTPUT);
-
   WiFi.softAP(ssid, password);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   delay(100);
@@ -114,17 +106,7 @@ void loop() {
   // ----- Servicio wifi -----
 
   server.handleClient();
-  
-  /*if(LED1status)
-  {digitalWrite(LED1pin, HIGH);}
-  else
-  {digitalWrite(LED1pin, LOW);}
-  
-  if(LED2status)
-  {digitalWrite(LED2pin, HIGH);}
-  else
-  {digitalWrite(LED2pin, LOW);}*/
-  
+    
   // ----- Servicio wifi -----
 
   
@@ -200,8 +182,6 @@ void Sevomotor(){
   
 void handle_OnConnect() {
   statusWifioInfra = 0;
-  //Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
-  //server.send(200, "text/html", SendHTML(LED1status,LED2status));
   server.send(200, "text/html", SendHTML());  
 }
 
