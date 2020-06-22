@@ -71,8 +71,8 @@ void setup() {
 
   servoTovilloIzquierdo.attach(5); //D1
   servoPieIzquierdo.attach(4); //D2
- // servoTovilloDerecho.attach(0); //D3
- // servoPieDeerecho.attach(2); //D4
+  servoTovilloDerecho.attach(0); //D3
+  servoPieDeerecho.attach(2); //D4
  // servoMotorManos.attach(12); //D6
  // servoCabeza.attach(13); //D7
 
@@ -94,10 +94,10 @@ void setup() {
   delay(100);
   
   server.on("/", handle_OnConnect);
-  server.on("/accion1on", disparadorAccion1On);
-  server.on("/accion1off", disparadorAccion1Off);
-  server.on("/accion2on", disparadorAccion2On);
-  server.on("/accion2off", disparadorAccion2Off);
+  server.on("/accion1", disparadorAccion1 );
+  server.on("/accion2", disparadorAccion2 );
+  server.on("/accion3", disparadorAccion3 );
+
   
   server.onNotFound(handle_NotFound);
   
@@ -134,14 +134,14 @@ void loop() {
     Sevomotor();
     irrecv.resume();  // Receive the next value
 
-    Serial.print("valor: ");
-    Serial.println(val);
+   /* Serial.print("valor: ");
+    Serial.println(val); */
 
-    delay(100);
   }
   
   Sevomotor();
 
+  delay(100);
   
 }
 
@@ -171,22 +171,24 @@ void Sevomotor(){
     // al apretar 0
     servoTovilloIzquierdo.write(45);
     servoPieIzquierdo.write(50);
+    servoTovilloDerecho.write(45);
+    servoPieDeerecho.write(50);
     
-      Serial.println("servo motro 0");
     break;
   case 2:
     // al apretar 1
     servoTovilloIzquierdo.write(95);
     servoPieIzquierdo.write(105);
-
-      Serial.println("servo motro 90");
+    servoTovilloDerecho.write(100);
+    servoPieDeerecho.write(105);
+    
     break;
   case 3:
     // al apretar 2
     servoTovilloIzquierdo.write(135);
     servoPieIzquierdo.write(160);
-   
-      Serial.println("servo motro 180");
+    servoTovilloDerecho.write(135);
+    servoPieDeerecho.write(160);
 
     break;
 }
@@ -198,39 +200,50 @@ void Sevomotor(){
   
 void handle_OnConnect() {
   statusWifioInfra = 0;
-  Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
-  server.send(200, "text/html", SendHTML(LED1status,LED2status)); 
+  //Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
+  //server.send(200, "text/html", SendHTML(LED1status,LED2status));
+  server.send(200, "text/html", SendHTML());  
 }
 
-void disparadorAccion1On() {
-  statusWifioInfra = 1;
-  Serial.println("GPIO7 Status: ON");
-  server.send(200, "text/html", SendHTML(true,LED2status)); 
+void disparadorAccion1(){
+  
+  if(statusWifioInfra == 1){
+    statusWifioInfra = 0;
+  }else {
+    statusWifioInfra = 1;
+    }
+  
+  server.send(200, "text/html", SendHTML()); 
 }
 
-void disparadorAccion1Off() {
-  statusWifioInfra = 0;
-  Serial.println("GPIO7 Status: OFF");
-  server.send(200, "text/html", SendHTML(false,LED2status)); 
+void disparadorAccion2() {
+  
+ if(statusWifioInfra == 2){
+    statusWifioInfra = 0;
+  }else {
+    statusWifioInfra = 2;
+    }
+    
+  server.send(200, "text/html", SendHTML()); 
 }
 
-void disparadorAccion2On() {
-  statusWifioInfra = 2;
-  Serial.println("GPIO6 Status: ON");
-  server.send(200, "text/html", SendHTML(LED1status,true)); 
-}
-
-void disparadorAccion2Off() {
-  statusWifioInfra = 0;
-  Serial.println("GPIO6 Status: OFF");
-  server.send(200, "text/html", SendHTML(LED1status,false)); 
-}
+void disparadorAccion3(){
+  if(statusWifioInfra == 3){
+    statusWifioInfra = 0;
+  }else {
+    statusWifioInfra = 3;
+    }
+    
+  server.send(200, "text/html", SendHTML()); 
+ }
 
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
 
-String SendHTML(uint8_t led1stat,uint8_t led2stat){
+// String SendHTML(uint8_t led1stat,uint8_t led2stat){
+String SendHTML(){
+
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr +="<title>LED Control</title>\n";
@@ -247,16 +260,17 @@ String SendHTML(uint8_t led1stat,uint8_t led2stat){
   ptr +="<body>\n";
   ptr +="<h1>Makey Web Server</h1>\n";
   ptr +="<h3>Control web</h3>\n";
-  
-   if(led1stat)
-  {ptr +="<p>Makey piernas hacia 0 grados </p><a class=\"button button-off\" href=\"/accion1off\">OFF</a>\n";}
-  else
-  {ptr +="<p>Makey piernas por hacia 0 grados</p><a class=\"button button-on\" href=\"/accion1on\">ON</a>\n";}
 
-  if(led2stat)
-  {ptr +="<p>Makey piernas centrada</p><a class=\"button button-off\" href=\"/accion2off\">OFF</a>\n";}
-  else
-  {ptr +="<p>Makey piernas por centrada </p><a class=\"button button-on\" href=\"/accion2on\">ON</a>\n";}
+  // botton 1
+  ptr +="<p>Makey piernas hacia 0 grados </p><a class=\"button button-on\" href=\"/accion1\">ON</a>\n";
+  
+  // botton 2
+  ptr +="<p>Makey piernas centrada</p><a class=\"button button-on\" href=\"/accion2\">ON</a>\n";
+
+  // botton 3
+  ptr +="<p>Makey piernas hacia 180 grados</p><a class=\"button button-on\" href=\"/accion3\">ON</a>\n";
+
+
 
   ptr +="</body>\n";
   ptr +="</html>\n";
