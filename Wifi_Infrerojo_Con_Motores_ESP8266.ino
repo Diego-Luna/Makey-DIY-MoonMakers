@@ -94,10 +94,11 @@ void setup() {
   delay(100);
   
   server.on("/", handle_OnConnect);
-  server.on("/led1on", handle_led1on);
-  server.on("/led1off", handle_led1off);
-  server.on("/led2on", handle_led2on);
-  server.on("/led2off", handle_led2off);
+  server.on("/accion1on", disparadorAccion1On);
+  server.on("/accion1off", disparadorAccion1Off);
+  server.on("/accion2on", disparadorAccion2On);
+  server.on("/accion2off", disparadorAccion2Off);
+  
   server.onNotFound(handle_NotFound);
   
   server.begin();
@@ -114,7 +115,7 @@ void loop() {
 
   server.handleClient();
   
-  if(LED1status)
+  /*if(LED1status)
   {digitalWrite(LED1pin, HIGH);}
   else
   {digitalWrite(LED1pin, LOW);}
@@ -122,7 +123,7 @@ void loop() {
   if(LED2status)
   {digitalWrite(LED2pin, HIGH);}
   else
-  {digitalWrite(LED2pin, LOW);}
+  {digitalWrite(LED2pin, LOW);}*/
   
   // ----- Servicio wifi -----
 
@@ -170,10 +171,6 @@ void Sevomotor(){
     // al apretar 0
     servoTovilloIzquierdo.write(45);
     servoPieIzquierdo.write(50);
-   /* servoTovilloDerecho.write(0);
-    servoPieDeerecho.write(0);
-    servoMotorManos.write(0);
-    servoCabeza.write(0); */
     
       Serial.println("servo motro 0");
     break;
@@ -181,24 +178,14 @@ void Sevomotor(){
     // al apretar 1
     servoTovilloIzquierdo.write(95);
     servoPieIzquierdo.write(105);
-   /* servoTovilloDerecho.write(90);
-    servoPieDeerecho.write(90);
-    servoMotorManos.write(90);
-    servoCabeza.write(90);*/
 
-    
       Serial.println("servo motro 90");
     break;
   case 3:
     // al apretar 2
     servoTovilloIzquierdo.write(135);
     servoPieIzquierdo.write(160);
-   /* servoTovilloDerecho.write(180);
-    servoPieDeerecho.write(180);
-    servoMotorManos.write(180);
-    servoCabeza.write(180); */
-
-    
+   
       Serial.println("servo motro 180");
 
     break;
@@ -215,25 +202,25 @@ void handle_OnConnect() {
   server.send(200, "text/html", SendHTML(LED1status,LED2status)); 
 }
 
-void handle_led1on() {
+void disparadorAccion1On() {
   statusWifioInfra = 1;
   Serial.println("GPIO7 Status: ON");
   server.send(200, "text/html", SendHTML(true,LED2status)); 
 }
 
-void handle_led1off() {
+void disparadorAccion1Off() {
   statusWifioInfra = 0;
   Serial.println("GPIO7 Status: OFF");
   server.send(200, "text/html", SendHTML(false,LED2status)); 
 }
 
-void handle_led2on() {
+void disparadorAccion2On() {
   statusWifioInfra = 2;
   Serial.println("GPIO6 Status: ON");
   server.send(200, "text/html", SendHTML(LED1status,true)); 
 }
 
-void handle_led2off() {
+void disparadorAccion2Off() {
   statusWifioInfra = 0;
   Serial.println("GPIO6 Status: OFF");
   server.send(200, "text/html", SendHTML(LED1status,false)); 
@@ -258,18 +245,18 @@ String SendHTML(uint8_t led1stat,uint8_t led2stat){
   ptr +="</style>\n";
   ptr +="</head>\n";
   ptr +="<body>\n";
-  ptr +="<h1>ESP8266 Web Server</h1>\n";
-  ptr +="<h3>Using Access Point(AP) Mode</h3>\n";
+  ptr +="<h1>Makey Web Server</h1>\n";
+  ptr +="<h3>Control web</h3>\n";
   
    if(led1stat)
-  {ptr +="<p>LED1 Status: ON</p><a class=\"button button-off\" href=\"/led1off\">OFF</a>\n";}
+  {ptr +="<p>Makey piernas hacia 0 grados </p><a class=\"button button-off\" href=\"/accion1off\">OFF</a>\n";}
   else
-  {ptr +="<p>LED1 Status: OFF</p><a class=\"button button-on\" href=\"/led1on\">ON</a>\n";}
+  {ptr +="<p>Makey piernas por hacia 0 grados</p><a class=\"button button-on\" href=\"/accion1on\">ON</a>\n";}
 
   if(led2stat)
-  {ptr +="<p>LED2 Status: ON</p><a class=\"button button-off\" href=\"/led2off\">OFF</a>\n";}
+  {ptr +="<p>Makey piernas centrada</p><a class=\"button button-off\" href=\"/accion2off\">OFF</a>\n";}
   else
-  {ptr +="<p>LED2 Status: OFF</p><a class=\"button button-on\" href=\"/led2on\">ON</a>\n";}
+  {ptr +="<p>Makey piernas por centrada </p><a class=\"button button-on\" href=\"/accion2on\">ON</a>\n";}
 
   ptr +="</body>\n";
   ptr +="</html>\n";
